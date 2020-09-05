@@ -5,11 +5,12 @@ function render_config(mode)
 
     return {
         mode,
-        entry: './src/browser.js',
+        entry: './src/menu.js',
         devtool: false,
         output: {
             filename: is_development ? 'menu.js' : 'menu.min.js',
             library: 'menu',
+            libraryExport: 'default',
         },
         externals: {
             jquery: 'jQuery',

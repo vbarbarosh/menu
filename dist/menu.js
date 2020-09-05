@@ -82,27 +82,10 @@ var menu =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/browser.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/menu.js");
 /******/ })
 /************************************************************************/
 /******/ ({
-
-/***/ "./src/browser.js":
-/*!************************!*\
-  !*** ./src/browser.js ***!
-  \************************/
-/*! exports provided: menu */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _menu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu */ "./src/menu.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "menu", function() { return _menu__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-
-
-
-/***/ }),
 
 /***/ "./src/menu.js":
 /*!*********************!*\
@@ -117,7 +100,63 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 
 
-function menu(event, stack, move) {
+function menu(elem) {
+  var ctx = {};
+  ctx.elem = elem;
+  ctx.inst = null;
+  ctx.event = null;
+  ctx.is_open = false;
+  ctx.stack = [];
+  ctx.click = typeof ctx.click == 'function' ? ctx.click : function () {
+    if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(ctx.event.target).addBack().closest('[data-menu-keepalive]').length == 0) {
+      hide();
+    }
+  };
+  var listeners = {
+    click: function click(event) {
+      ctx.event = event;
+
+      if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).addBack().closest(ctx.elem).length > 0) {
+        ctx.item = menu_int(event, ctx.stack);
+
+        if (ctx.item) {
+          ctx.click(ctx);
+        }
+      }
+    },
+    mouseover: function mouseover(event) {
+      ctx.event = event;
+
+      if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).addBack().closest(ctx.elem).length > 0) {
+        menu_int(event, ctx.stack);
+      }
+    },
+    mousedown: function mousedown(event) {
+      ctx.event = event;
+
+      if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).addBack().closest(ctx.elem).length == 0) {
+        menu_int(null, ctx.stack);
+      }
+    }
+  };
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on(listeners);
+  ctx.inst = {
+    end: end,
+    hide: hide
+  };
+  return ctx.inst;
+
+  function end() {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).off(listeners);
+  }
+
+  function hide() {
+    ctx.is_open = false;
+    menu_int(null, ctx.stack);
+  }
+}
+
+function menu_int(event, stack, move) {
   // Special case meaning "close it, we are finished"
   if (event === null) {
     while (stack.length > 1) {
@@ -242,4 +281,4 @@ module.exports = jQuery;
 
 /***/ })
 
-/******/ });
+/******/ })["default"];
