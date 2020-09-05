@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Menu • 1</title>
+
+<link href="https://unpkg.com/@vbarbarosh/smcss@0.6.1/dist/sm.css" rel="stylesheet">
+<style>
+    ul { display: none; position: fixed; padding: 5px; margin: 0; background: white; }
+    li { list-style: none; }
+    li:hover { background: yellow; }
+    li:empty {
+        height: 1px;
+        margin: 5px 0;
+        background: black;
+    }
+</style>
+
+<div v-on:mouseover="mouseover" id="app" class="w400 ma p5 bs5">
+    <div>
+        <span data-menu="file">File</span> |
+        <span data-menu="edit">Edit</span> |
+        <span data-menu="view">View</span> |
+        <span data-menu="help">Help</span>
+    </div>
+    <ul id="file" class="border">
+        <li>New Project</li>
+        <li>New</li>
+        <li>Open</li>
+        <li>Save As</li>
+        <li></li>
+        <li>Settings</li>
+        <li>File Properties</li>
+        <li></li>
+        <li>Exit</li>
+    </ul>
+    <ul id="edit" class="border">
+        <li>Undo</li>
+        <li>Redo</li>
+        <li></li>
+        <li>Cut</li>
+        <li>Copy</li>
+        <li>Paste</li>
+        <li>Delete</li>
+    </ul>
+    <ul id="view" class="border">
+        <li data-menu="view/view-tool">Tool Windows</li>
+        <li data-menu="view/view-appearance">Appearance</li>
+    </ul>
+    <ul id="view-tool" class="border">
+        <li>Commit</li>
+        <li>Project</li>
+        <li>Favorites</li>
+        <li>Problems</li>
+        <li>Structure</li>
+        <li>Services</li>
+        <li>Git</li>
+        <li>Database</li>
+        <li>Event Log</li>
+        <li>npm</li>
+        <li>Terminal</li>
+        <li>TODO</li>
+    </ul>
+    <ul id="view-appearance" class="border">
+        <li>Enter Presentation Mode</li>
+        <li>Enter Distraction Free Mode</li>
+        <li>Enter Full Screen</li>
+        <li>Enter Zen Mode</li>
+        <li></li>
+        <li>Tool Bar</li>
+        <li>Tool Window Bar</li>
+        <li>Status Bar</li>
+    </ul>
+    <ul id="help" class="border">
+        <li>Find Action</li>
+        <li></li>
+        <li>Help</li>
+        <li>Getting Started</li>
+        <li>Keymap Reference</li>
+        <li>Demos and Screencasts</li>
+        <li>Tip of the Day</li>
+        <li></li>
+        <li>Productivity Guide</li>
+        <li></li>
+        <li>Contact Support</li>
+        <li>Submit a Bug Report</li>
+    </ul>
+</div>
+
+<script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
+<script>
+// two separate tasks:
+// 1. show/hide submenu
+//    * keep stack of parents
+// 2. position submenu
+new Vue({
+    el: '#app',
+    methods: {
+        mouseover: function (event) {
+            console.log('mouseover', event.target);
+            if (event.target.dataset.menu) {
+                const menu = event.target.dataset.menu.split('/');
+                jQuery('ul[id]').hide();
+                const stack = [];
+                menu.forEach(function (id) {
+                    stack.push(id);
+                    const {top, left, right, bottom} = jQuery(`[data-menu="${stack.join('/')}"]`).get(0).getBoundingClientRect();
+                    if (stack.length == 1) {
+                        jQuery(`#${id}`).show().css({top: bottom, left});                        
+                    }
+                    else {
+                        jQuery(`#${id}`).show().css({top: top, left: right});
+                    }
+                });
+            }
+        },
+    },
+});
+</script>

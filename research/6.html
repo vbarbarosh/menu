@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Menu • 6 • HTML with nested lists</title>
+
+<link href="https://unpkg.com/@vbarbarosh/smcss@0.6.1/dist/sm.css" rel="stylesheet">
+<style>
+    ul {
+        margin: 0;
+        padding: 0;
+        background: white;
+        min-width: 150px;
+    }
+    ul ul {
+        display: none;
+        position: fixed;
+    }
+    li { padding: 0 10px; list-style: none; line-height: 1.75em; }
+    li:hover { background: yellow; }
+    li:empty { height: 1px; background: black; }
+    li > span,
+    li > div > span { float: right; margin-left: 15px; }
+</style>
+
+<div id="app" class="w400 ma bs5">
+    <ul v-on:mousemove="mouseover" class="flex-row">
+        <li>
+            File
+            <ul class="border">
+                <li>New Project</li>
+                <li>New</li>
+                <li>Open</li>
+                <li>Save As</li>
+                <li></li>
+                <li>Settings</li>
+                <li>File Properties</li>
+                <li></li>
+                <li>Exit</li>
+            </ul>
+        </li>
+        <li>
+            Edit
+            <ul class="border">
+                <li>Undo</li>
+                <li>Redo</li>
+                <li></li>
+                <li>Cut</li>
+                <li>Copy</li>
+                <li>Paste</li>
+                <li>Delete</li>
+            </ul>
+        </li>
+        <li>
+           View
+            <ul class="border">
+                <li>
+                    Tool Windows <span>►</span>
+                    <ul class="border">
+                        <li>Commit <span>Alt+0</span></li>
+                        <li>Project <span>Alt+1</span></li>
+                        <li>Favorites <span>Alt+2</span></li>
+                        <li>Problems <span>Alt+6</span></li>
+                        <li>Structure <span>Alt+7</span></li>
+                        <li>Services <span>Alt+8</span></li>
+                        <li>Git <span>Alt+9</span></li>
+                        <li>Database</li>
+                        <li>Event Log</li>
+                        <li>npm</li>
+                        <li>Terminal <span>Alt+F12</span></li>
+                        <li>TODO</li>
+                    </ul>
+                </li>
+                <li>
+                    Appearance <span>►</span>
+                    <ul class="border">
+                        <li>Enter Presentation Mode</li>
+                        <li>Enter Distraction Free Mode</li>
+                        <li>Enter Full Screen</li>
+                        <li>Enter Zen Mode</li>
+                        <li></li>
+                        <li>Tool Bar</li>
+                        <li>Tool Window Bar</li>
+                        <li>Status Bar</li>
+                        <li>
+                            Status Bar Widgets <span>►</span>
+                            <ul class="border">
+                                <li>Line / Column</li>
+                                <li>Line Separator</li>
+                                <li>File Encoding</li>
+                                <li>Editor Selection Mode</li>
+                                <li>Indentation</li>
+                                <li>Memory Notification</li>
+                                <li>JSON Schema</li>
+                                <li>Git Branch</li>
+                                <li>Grid Position</li>
+                            </ul>
+                        </li>
+                        <li>Navigation Bar</li>
+                        <li>Members in Navigation Bar</li>
+                        <li>Main Menu</li>
+                        <li>Detail in Tree View <span>Alt+Shift+\</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Help
+            <ul class="border">
+                <li>Find Action</li>
+                <li></li>
+                <li>Help</li>
+                <li>Getting Started</li>
+                <li>Keymap Reference</li>
+                <li>Demos and Screencasts</li>
+                <li>Tip of the Day</li>
+                <li></li>
+                <li>Productivity Guide</li>
+                <li></li>
+                <li>Contact Support</li>
+                <li>Submit a Bug Report</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
+<script>
+// two separate tasks:
+// 1. show/hide submenu
+//    * keep stack of parents
+// 2. choose right position for a just shown submenu
+new Vue({
+    el: '#app',
+    data: {
+        stack: [],
+    },
+    methods: {
+        mouseover: function (event) {
+            menu(event, this.stack);
+        },
+    },
+});
+
+function menu(event, stack)
+{
+    // 1. determine element with label
+    // 2. determine submenu
+    const label = jQuery(event.target).addBack().closest('li').get(0);
+    if (label) {
+        while (stack.length) {
+            const top = stack.pop();
+            if (jQuery(top.submenu).find(label).length) {
+                stack.push(top);
+                break;
+            }
+            jQuery(top.label).css('background', '');
+            jQuery(top.submenu).hide();
+        }
+        const submenu = jQuery(label).children('ul').get(0);
+        if (submenu) {
+            const {top, left, right, bottom} = label.getBoundingClientRect();
+            if (stack.length == 0) {
+                jQuery(submenu).show().css({top: bottom, left});
+            }
+            else {
+                jQuery(submenu).show().css({top: top, left: right});
+            }
+            jQuery(label).css('background', 'red');
+            stack.push({submenu, label});
+        }
+    }
+}
+</script>

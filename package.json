@@ -1,0 +1,40 @@
+{
+  "author": "Vladimir Barbarosh",
+  "name": "@vbarbarosh/menu",
+  "version": "0.0.0",
+  "description": "A small js for making menus",
+  "license": "ISC",
+  "main": "src/browser.js",
+  "unpkg": "dist/menu.js",
+  "jsdelivr": "dist/menu.js",
+  "files": [
+    "src",
+    "dist/*.js"
+  ],
+  "keywords": [
+    "js",
+    "menu"
+  ],
+  "scripts": {
+    "build": "webpack",
+    "test": "mjs src/*.m.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbarbarosh/menu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vbarbarosh/menu/issues"
+  },
+  "homepage": "https://menu.vbarbarosh.com",
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "peerDependencies": {
+    "jquery": "^3.5.1"
+  }
+}
