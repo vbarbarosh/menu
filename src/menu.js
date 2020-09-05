@@ -1,6 +1,55 @@
 import jQuery from 'jquery';
 
-function menu(event, stack, move)
+function menu(elem)
+{
+    const ctx = {};
+    ctx.elem = elem;
+    ctx.inst = null;
+    ctx.event = null;
+    ctx.is_open = false;
+    ctx.stack = [];
+    ctx.click = typeof ctx.click == 'function' ? ctx.click : function () {
+        if (jQuery(ctx.event.target).addBack().closest('[data-menu-keepalive]').length == 0) {
+            hide();
+        }
+    };
+
+    const listeners = {
+        click: function (event) {
+            ctx.event = event;
+            if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+                ctx.item = menu_int(event, ctx.stack);
+                if (ctx.item) {
+                    ctx.click(ctx);
+                }
+            }
+        },
+        mouseover: function (event) {
+            ctx.event = event;
+            if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+                menu_int(event, ctx.stack);
+            }
+        },
+        mousedown: function (event) {
+            ctx.event = event;
+            if (jQuery(event.target).addBack().closest(ctx.elem).length == 0) {
+                menu_int(null, ctx.stack);
+            }
+        },
+    };
+    jQuery(document).on(listeners);
+    ctx.inst = {end, hide};
+    return ctx.inst;
+    function end() {
+        jQuery(document).off(listeners);
+    }
+    function hide() {
+        ctx.is_open = false;
+        menu_int(null, ctx.stack);
+    }
+}
+
+function menu_int(event, stack, move)
 {
     // Special case meaning "close it, we are finished"
     if (event === null) {
@@ -71,7 +120,7 @@ function menu(event, stack, move)
                 }
                 else {
                     jQuery(submenu).show().css({top: top, left: right});
-                }                
+                }
             }
             jQuery(label).addClass('open hover');
             stack.push({label, submenu});
