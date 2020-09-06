@@ -15,7 +15,7 @@
   user-select: none;
 }
 
-.menu-flat ul ul {
+.menu-flat ul {
   display: none;
   position: fixed;
   border: 1px solid;
@@ -26,6 +26,10 @@
   line-height: 1.75em;
   cursor: pointer;
   padding: 0 5px;
+}
+
+.menu-flat li > span {
+  float: right;
 }
 
 .menu-flat li:empty {
