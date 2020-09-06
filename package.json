@@ -4,7 +4,7 @@
   "version": "0.0.2",
   "description": "A small js for making menus",
   "license": "ISC",
-  "main": "src/browser.js",
+  "main": "src/menu.js",
   "unpkg": "dist/menu.js",
   "jsdelivr": "dist/menu.js",
   "files": [
