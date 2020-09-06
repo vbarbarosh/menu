@@ -48,3 +48,4 @@ A small js for making menus
 * [Menu | jQuery UI](https://jqueryui.com/menu/)
 * [jQuery-menu-aim](https://github.com/kamens/jQuery-menu-aim)
 * [Menu - Metro 4 :: Popular HTML, CSS and JS library](https://metroui.org.ua/menu.html)
+* [A user interface algorithm in the menu? · Raygun Blog](https://raygun.com/blog/algorithm-menu-2/)
