@@ -45,6 +45,6 @@ A small js for making menus
 
 ## Links
 
-* [https://jqueryui.com/menu/](Menu | jQuery UI)
-* [https://github.com/kamens/jQuery-menu-aim](jQuery-menu-aim)
-* [https://metroui.org.ua/menu.html](Menu - Metro 4 :: Popular HTML, CSS and JS library)
+* [Menu | jQuery UI](https://jqueryui.com/menu/)
+* [jQuery-menu-aim](https://github.com/kamens/jQuery-menu-aim)
+* [Menu - Metro 4 :: Popular HTML, CSS and JS library](https://metroui.org.ua/menu.html)
