@@ -35,9 +35,10 @@ bin/build
 
 version=$(node -e 'console.log(require("./package.json").version)')
 # Update version in docs
-sed -i 's:\(<sub><sub>v\)[0-9]\+\.[0-9]\+\.[0-9]\+\(</sub></sub>\):\1'$version'\2:' docs/index.html
-sed -i 's:\(https\://unpkg\.com/@vbarbarosh/menu@\)[0-9]\+\.[0-9]\+\.[0-9]\+\(/dist/.*\):\1'$version'\2:' docs/index.html
-sed -i 's:\(https\://unpkg\.com/@vbarbarosh/menu@\)[0-9]\+\.[0-9]\+\.[0-9]\+\(/dist/.*\):\1'$version'\2:' README.md
+for file in README.md docs/index.html docs/demos/*.html; do
+    sed -i 's:\(<sub><sub>v\)[0-9]\+\.[0-9]\+\.[0-9]\+\(</sub></sub>\):\1'$version'\2:' $file
+    sed -i 's:\(https\://unpkg\.com/@vbarbarosh/menu@\)[0-9]\+\.[0-9]\+\.[0-9]\+\(/dist/.*\):\1'$version'\2:' $file
+done
 
 git add package.json package-lock.json dist docs/index.html
 git commit -m "release v$version"
