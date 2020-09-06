@@ -26,12 +26,12 @@ fi
 
 bin/test
 
-# Increase a version without commiting it and making a tag
-# XXX This is a hack to disable commiting by substituting `true` for `git`
+# Increase a version without committing it and making a tag
+# XXX This is a hack to disable committing by substituting `true` for `git`
 npm version $1 --git=/bin/true
 # Rebuild dist
 rm -rf dist
-npm run build
+bin/build
 
 version=$(node -e 'console.log(require("./package.json").version)')
 # Update version in docs

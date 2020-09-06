@@ -9,7 +9,8 @@
   "jsdelivr": "dist/menu.js",
   "files": [
     "src",
-    "dist/*.js"
+    "dist/*.js",
+    "dist/*.css"
   ],
   "keywords": [
     "js",
