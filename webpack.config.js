@@ -46,7 +46,7 @@ function render_sass(mode, entry)
         entry,
         devtool: false,
         output: {
-            filename: 'a.js',
+            filename: 'a.tmp',
         },
         module: {
             rules: [
