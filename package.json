@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "webpack",
-    "test": "mjs src/*.m.js"
+    "test": "mocha -r esm"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,9 @@
     "@babel/preset-env": "^7.11.5",
     "babel-loader": "^8.1.0",
     "css-loader": "^4.2.2",
+    "esm": "^3.2.25",
     "mini-css-extract-plugin": "^0.11.0",
+    "mocha": "^8.1.3",
     "sass": "^1.26.10",
     "sass-loader": "^10.0.2",
     "webpack": "^4.44.1",

@@ -1,0 +1,2 @@
+describe('menu', function () {
+});

@@ -10,4 +10,4 @@ scriptname=`basename $script`
 
 cd $scriptdir/..
 
-npm run test
+npm test -- "${@-src/**/*.test.js}"
