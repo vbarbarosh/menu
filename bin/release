@@ -20,7 +20,7 @@ major|minor|patch)
 esac
 
 if test -n "`git status -s`"; then
-    echo error: there is changes 2>&1
+    echo error: there are changes 2>&1
     exit 1
 fi
 
