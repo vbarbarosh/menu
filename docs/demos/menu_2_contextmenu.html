@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Demos • 2 • Context Menu</title>
+
+<link href="https://unpkg.com/@vbarbarosh/smcss@0.6.1/dist/sm.css" rel="stylesheet">
+
+<style type="text/css">
+.menu-flat {
+    display: flex;
+    flex-direction: row;
+    width: 400px;
+    margin: auto;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-flat,
+.menu-flat ul {
+    margin: 0;
+    padding: 0;
+    background: white;
+    min-width: 150px;
+    user-select: none;
+}
+
+.menu-flat ul {
+    display: none;
+    position: fixed;
+    border: 1px solid;
+}
+
+.menu-flat li {
+    list-style: none;
+    line-height: 1.75em;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.menu-flat li > span {
+    float: right;
+}
+
+.menu-flat li:empty {
+    height: 1px;
+    background: black;
+}
+
+.menu-flat .open {
+    background: #8f8;
+}
+
+.menu-flat .hover {
+    background: #88f;
+}
+</style>
+
+<div id="app" v-on:contextmenu="contextmenu" class="w400 h300 ma bs5 silver">
+    <p>Right-click somewhere to open a context menu...</p>
+    <ul ref="menu" class="menu-flat">
+        <li>
+            File
+            <ul>
+                <li>New Project</li>
+                <li>New</li>
+                <li>Open</li>
+                <li>Save As</li>
+                <li></li>
+                <li>Settings</li>
+                <li>File Properties</li>
+                <li></li>
+                <li>Exit</li>
+            </ul>
+        </li>
+        <li>
+            Edit
+            <ul>
+                <li>Undo</li>
+                <li>Redo</li>
+                <li></li>
+                <li>Cut</li>
+                <li>Copy</li>
+                <li>Paste</li>
+                <li>Delete</li>
+            </ul>
+        </li>
+        <li>
+            View
+            <ul>
+                <li>
+                    Tool Windows <span>►</span>
+                    <ul>
+                        <li>Commit <span>Alt+0</span></li>
+                        <li>Project <span>Alt+1</span></li>
+                        <li>Favorites <span>Alt+2</span></li>
+                        <li>Problems <span>Alt+6</span></li>
+                        <li>Structure <span>Alt+7</span></li>
+                        <li>Services <span>Alt+8</span></li>
+                        <li>Git <span>Alt+9</span></li>
+                        <li>Database</li>
+                        <li>Event Log</li>
+                        <li>npm</li>
+                        <li>Terminal <span>Alt+F12</span></li>
+                        <li>TODO</li>
+                    </ul>
+                </li>
+                <li>
+                    Appearance <span>►</span>
+                    <ul>
+                        <li>Enter Presentation Mode</li>
+                        <li>Enter Distraction Free Mode</li>
+                        <li>Enter Full Screen</li>
+                        <li>Enter Zen Mode</li>
+                        <li></li>
+                        <li>Tool Bar</li>
+                        <li>Tool Window Bar</li>
+                        <li>Status Bar</li>
+                        <li>
+                            Status Bar Widgets <span>►</span>
+                            <ul>
+                                <li>Line / Column</li>
+                                <li>Line Separator</li>
+                                <li>File Encoding</li>
+                                <li>Editor Selection Mode</li>
+                                <li>Indentation</li>
+                                <li>Memory Notification</li>
+                                <li>JSON Schema</li>
+                                <li>Git Branch</li>
+                                <li>Grid Position</li>
+                            </ul>
+                        </li>
+                        <li>Navigation Bar</li>
+                        <li>Members in Navigation Bar</li>
+                        <li>Main Menu</li>
+                        <li>Detail in Tree View <span>Alt+Shift+\</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Zoom [{{ zoom.toFixed(1) }}]
+            <ul data-menu-keepalive>
+                <li v-on:click="zoom_in">Zoom In</li>
+                <li v-on:click="zoom_100">100%</li>
+                <li v-on:click="zoom_out">Zoom Out</li>
+            </ul>
+        </li>
+        <li>
+            Help
+            <ul>
+                <li>Find Action</li>
+                <li></li>
+                <li>Help</li>
+                <li>Getting Started</li>
+                <li>Keymap Reference</li>
+                <li>Demos and Screencasts</li>
+                <li>Tip of the Day</li>
+                <li></li>
+                <li>Productivity Guide</li>
+                <li></li>
+                <li>Contact Support</li>
+                <li>Submit a Bug Report</li>
+            </ul>
+        </li>
+        <li>Action</li>
+    </ul>
+</div>
+
+<script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
+<!--<script src="https://unpkg.com/@vbarbarosh/menu@0.0.3/dist/menu.js"></script>-->
+<script>
+    function menu(elem)
+    {
+        const ctx = {};
+        ctx.elem = elem;
+        ctx.inst = null;
+        ctx.event = null;
+        ctx.is_open = false;
+        ctx.stack = [];
+        ctx.click = typeof ctx.click == 'function' ? ctx.click : function () {
+            if (jQuery(ctx.event.target).addBack().closest('[data-menu-keepalive]').length == 0) {
+                hide();
+            }
+        };
+
+        const listeners = {
+            click: function (event) {
+                ctx.event = event;
+                if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+                    ctx.item = menu_int(event, ctx.stack);
+                    if (ctx.item) {
+                        ctx.click(ctx);
+                    }
+                }
+            },
+            mouseover: function (event) {
+                ctx.event = event;
+                if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+                    menu_int(event, ctx.stack);
+                }
+            },
+            mousedown: function (event) {
+                ctx.event = event;
+                if (jQuery(event.target).addBack().closest(ctx.elem).length == 0) {
+                    menu_int(null, ctx.stack);
+                }
+            },
+        };
+        jQuery(document).on(listeners);
+        ctx.inst = {end, hide};
+        return ctx.inst;
+        function end() {
+            jQuery(document).off(listeners);
+        }
+        function hide() {
+            ctx.is_open = false;
+            menu_int(null, ctx.stack);
+        }
+    }
+
+    function menu_int(event, stack, move)
+    {
+        // Special case meaning "close it, we are finished"
+        if (event === null) {
+            while (stack.length > 1) {
+                const top = stack.pop();
+                jQuery(top.label).removeClass('open hover');
+                jQuery(top.submenu).hide();
+            }
+            stack.pop();
+            return null;
+        }
+
+        // Ignore until menu was clicked
+        if (stack.length == 0 && event.type != 'click') {
+            return null;
+        }
+
+        let stack_length_orig = stack.length;
+        let is_special = false;
+        let special_label = null;
+
+        // 1. determine element with label
+        // 2. determine submenu
+        // -----------
+        // 1. click on item: return item
+        // 2. click on submenu: toggle submenu
+        const label = jQuery(event.target).addBack().closest('li').get(0);
+        if (label) {
+            // XXX hack
+            if (stack.length == 0) {
+                stack.push(null);
+            }
+            while (stack.length > 1) {
+                const top = stack.pop();
+                jQuery(top.label).removeClass('hover');
+                if (!top.submenu) {
+                    is_special = true;
+                }
+                if (!special_label) {
+                    special_label = top.label;
+                }
+                if (jQuery(top.submenu).find(label).length) {
+                    stack.push(top);
+                    break;
+                }
+                jQuery(top.label).removeClass('open');
+                jQuery(top.submenu).hide();
+            }
+            if (event.type == 'click' && stack_length_orig > stack.length + is_special) {
+                // Clicking on opened top menu means "close menu and exit"
+                if (stack.length == 1) {
+                    stack.pop();
+                }
+                else {
+                    jQuery(special_label).addClass('hover');
+                }
+                return null;
+            }
+            const submenu = jQuery(label).children('ul').get(0);
+            if (submenu) {
+                if (move) {
+                    move(label, submenu);
+                }
+                else {
+                    const {top, left, right, bottom} = label.getBoundingClientRect();
+                    if (stack.length <= 1) {
+                        jQuery(submenu).show().css({top: bottom, left});
+                    }
+                    else {
+                        jQuery(submenu).show().css({top: top, left: right});
+                    }
+                }
+                jQuery(label).addClass('open hover');
+                stack.push({label, submenu});
+                return null;
+            }
+            else {
+                stack.push({label, submenu: null});
+                jQuery(label).addClass('hover');
+            }
+            return label;
+        }
+    }
+</script>
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        zoom: 1,
+    },
+    methods: {
+        zoom_in: function () {
+            this.zoom += 0.1;
+            console.log('zoom_in');
+        },
+        zoom_out: function () {
+            this.zoom -= 0.1;
+            console.log('zoom_out');
+        },
+        zoom_100: function () {
+            this.zoom = 1;
+            console.log('zoom_100');
+        },
+        contextmenu: function (event) {
+            event.preventDefault();
+            console.log('contextmenu');
+            menu(this.$refs.menu)
+        },
+    },
+    mounted: function () {
+        // this.$once('hook:beforeDestroy', menu(this.$refs.menu).end);
+    },
+});
+</script>
