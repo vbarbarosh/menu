@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://unpkg.com/@vbarbarosh/smcss@0.6.1/dist/sm.css" rel="stylesheet" />
+    <title>Researching Context Menu | 20201108_025337_contextmenu.html</title>
+    <style>
+    .menu,
+    .menu ul {
+        border: 1px solid black;
+        background: rgb(249,249,249);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        user-select: none;
+    }
+    .menu span {
+        float: right;
+        margin-left: 15px
+    }
+    .menu li {
+        padding: 5px 15px;
+        min-width: 150px;
+    }
+    .menu li:empty {
+        padding: 0;
+        border-top: 1px solid black;
+    }
+    .menu li:hover {
+        cursor: pointer;
+        background: yellow;
+    }
+    .menu li:not(.open) > ul {
+        display: none;    
+    }
+    .menu li.open {
+        background: #88f;
+    }
+    .menu ul {
+        position: fixed;
+    }
+    </style>
+</head>
+<body>
+
+<br>
+
+<div id="app" v-on:contextmenu="contextmenu" class="w800 ma bs5">
+
+    <h1 class="xm" style="font-size:22px;">Researching Context Menu</h1>
+
+    <pre class="p5 dashed">
+1. Display a menu near the cursor.
+2. Hide it on a click (click inside - relative LI element, otherwise - null).
+Submenus
+1. Toggle .open class
+2. Set position after adding .open class
+</pre>
+
+    <div ref="menu" style="display:none;position:fixed;z-index:1;">
+        <ul class="menu">
+            <li>Cut</li>
+            <li>Copy</li>
+            <li>Paste</li>
+            <li></li>
+            <li>
+                Zoom [{{ zoom.toFixed(1) }}] <span>►</span>
+                <ul data-menu-keepalive>
+                    <li v-on:click="zoom_in">Increase</li>
+                    <li v-on:click="zoom_out">Decrease</li>
+                    <li v-on:click="zoom_100">100%</li>
+                </ul>
+            </li>
+            <li></li>
+            <li>
+                Submenu <span>►</span>
+                <ul>
+                    <li>Acerola – West Indian Cherry</li>
+                    <li>Apple</li>
+                    <li>Apricots</li>
+                    <li>Avocado</li>
+                    <li></li>
+                    <li>
+                        Submenu <span>►</span>
+                        <ul>
+                            <li>Acerola – West Indian Cherry</li>
+                            <li>Apple</li>
+                            <li>Apricots</li>
+                            <li>Avocado</li>
+                            <li></li>
+                            <li>Banana</li>
+                            <li>Blackberries</li>
+                            <li>Blackcurrant</li>
+                            <li>Blueberries</li>
+                            <li>Breadfruit</li>
+                        </ul>
+                    </li>
+                    <li>Banana</li>
+                    <li>Blackberries</li>
+                    <li>Blackcurrant</li>
+                    <li>Blueberries</li>
+                    <li>Breadfruit</li>
+                </ul>
+            </li>
+            <li>Woof</li>
+            <li>Meaow</li>
+            <li></li>
+            <li>
+                Fruits <span>►</span>
+                <ul>
+                    <li>Acerola – West Indian Cherry</li>
+                    <li>Apple</li>
+                    <li>Apricots</li>
+                    <li>Avocado</li>
+                    <li>Banana</li>
+                    <li>Blackberries</li>
+                    <li>Blackcurrant</li>
+                    <li>Blueberries</li>
+                    <li>Breadfruit</li>
+                </ul>
+            </li>
+            <li>
+                Vegetables <span>►</span>
+                <ul>
+                    <li>Garlic</li>
+                    <li>Ginger</li>
+                    <li>Kale and Cavolo Nero</li>
+                    <li>Kohlrabi</li>
+                    <li>Kūmara</li>
+                    <li>Leeks</li>
+                    <li>Lettuce</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <pre class="fix-b xm no-pointer-events">{{ events }}</pre>
+    <div class="fix-f z1n"></div>
+</div>
+
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
+<script src="https://unpkg.com/bluebird@3.7.2/js/browser/bluebird.js"></script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.js"></script>
+
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        zoom: 1,
+        events: [],
+    },
+    methods: {
+        contextmenu: async function (event) {
+            event.preventDefault();
+            const tmp = await contextmenu(this.$refs.menu, event.clientX, event.clientY).promise();
+            this.events.push(tmp ? tmp.innerText : 'n/a');
+            // Keep 20 most recent events
+            this.events.splice(0, Math.max(0, this.events.length - 20));
+        },
+        zoom_in: function () {
+            this.zoom += 0.1;
+        },
+        zoom_out: function () {
+            this.zoom -= 0.1;
+        },
+        zoom_100: function () {
+            this.zoom = 1;
+        },
+    }
+});
+
+function contextmenu(menu, client_x, client_y)
+{
+    // 1. Create a backdrop element to intercept mouse events
+    // 2.
+    let _resolve, _reject;
+    const _promise = new Promise(function (resolve, reject) {
+        _resolve = resolve;
+        _reject = reject;
+    });
+    const backdrop = document.body.appendChild(document.createElement('DIV'));
+    backdrop.style.position = 'fixed';
+    backdrop.style.top = '0';
+    backdrop.style.left = '0';
+    backdrop.style.right = '0';
+    backdrop.style.bottom = '0';
+    backdrop.style.zindex = '10000';
+    backdrop.addEventListener('click', backdrop_click);
+    backdrop.addEventListener('contextmenu', backdrop_contextmenu);
+    Array.from(menu.querySelectorAll('.open')).forEach(v => v.classList.remove('open'));
+    menu.style.display = '';
+    menu.style.zIndex = '10001';
+    menu.addEventListener('click', menu_click);
+    menu.addEventListener('mouseover', menu_mouseover);
+    menu.addEventListener('contextmenu', menu_contextmenu);
+    elem_move_root(menu, client_x, client_y);
+    return {end, promise};
+    function end(retval) {
+        _resolve(retval);
+        menu.style.display = 'none';
+        menu.removeEventListener('click', menu_click);
+        menu.removeEventListener('mouseover', menu_mouseover);
+        menu.removeEventListener('contextmenu', menu_contextmenu);
+        backdrop.removeEventListener('click', backdrop_click);
+        backdrop.removeEventListener('contextmenu', backdrop_contextmenu);
+        backdrop.remove();
+    }
+    function promise() {
+        return _promise;
+    }
+    function menu_click(event) {
+        const li = event.target.closest('li');
+        if (!li) {
+            return;
+        }
+        // Toggle submenu
+        const submenu = Array.from(li.children).find(v => v.tagName == 'UL');
+        if (submenu) {
+            li.classList.toggle('open');
+            return;
+        }
+        if (li.closest('[data-menu-keepalive]')) {
+            return;
+        }
+        end(li);
+    }
+    function menu_mouseover(event) {
+        const li = event.target.closest('li');
+        if (!li) {
+            return;
+        }
+        // Hide other submenus
+        const ancestors = elem_ancestors(li);
+        Array.from(menu.querySelectorAll('.open')).filter(v => !ancestors.includes(v)).forEach(v => v.classList.remove('open'));
+        // Possibly open new submenu
+        const submenu = Array.from(li.children).find(v => v.tagName == 'UL');
+        if (submenu) {
+            li.classList.add('open');
+            const r = li.getBoundingClientRect();
+            elem_move_submenu(submenu, r.right, r.top);
+        }
+    }
+    function menu_contextmenu(event) {
+        event.preventDefault();
+        menu_mouseover(event);
+    }
+    function backdrop_click() {
+        end(null);
+    }
+    function backdrop_contextmenu(event) {
+        event.preventDefault();
+        end(null);
+    }
+}
+
+function elem_ancestors(elem)
+{
+    const out = [];
+    for (let i = 0, p = elem?.parentElement; p && i < 100; ++i, p = p.parentElement) {
+        out.push(p);
+    }
+    return out;
+}
+
+function elem_move_root(elem, client_x, client_y)
+{
+    const w = elem.offsetWidth;
+    const h = elem.offsetHeight;
+    const ww = window.innerWidth;
+    const hh = window.innerHeight;
+    if (client_x + w < ww) {
+        elem.style.left = Math.round(client_x) + 'px';
+    }
+    else {
+        elem.style.left = Math.round(Math.max(0, client_x - w)) + 'px';
+    }
+    if (client_y + h < hh) {
+        elem.style.top = Math.round(client_y) + 'px';
+    }
+    else {
+        elem.style.top = Math.round(Math.max(0, client_y - h)) + 'px';
+    }
+}
+
+function elem_move_submenu(elem, client_x, client_y)
+{
+    const p = elem.parentElement;
+    const p_r = p.getBoundingClientRect();
+    const elem_w = elem.offsetWidth;
+    const window_w = window.innerWidth;
+    if (client_x + elem_w < window_w) {
+        elem.style.left = Math.round(client_x) + 'px';
+    }
+    else {
+        elem.style.left = Math.round(Math.max(0, p_r.left - elem_w)) + 'px'
+    }
+    elem.style.top = Math.round(Math.min(client_y, window.innerHeight - elem.offsetHeight)) + 'px';
+}
+</script>
+
+</body>
+</html>
