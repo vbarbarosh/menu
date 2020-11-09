@@ -97,7 +97,7 @@ function contextmenu(menu, client_x, client_y)
 function elem_ancestors(elem)
 {
     const out = [];
-    for (let i = 0, p = elem?.parentElement; p && i < 100; ++i, p = p.parentElement) {
+    for (let i = 0, p = (elem && elem.parentElement); p && i < 100; ++i, p = p.parentElement) {
         out.push(p);
     }
     return out;
