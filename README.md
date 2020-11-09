@@ -50,3 +50,4 @@ A small js for making menus
 * [Menu - Metro 4 :: Popular HTML, CSS and JS library](https://metroui.org.ua/menu.html)
 * [A user interface algorithm in the menu? · Raygun Blog](https://raygun.com/blog/algorithm-menu-2/)
 * [Dropdown Menus with More Forgiving Mouse Movement Paths](https://css-tricks.com/dropdown-menus-with-more-forgiving-mouse-movement-paths/)
+* [vue-context](https://github.com/rawilk/vue-context)
