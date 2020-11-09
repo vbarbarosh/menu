@@ -6,11 +6,11 @@ A small js for making menus
 
 ## Using from a Browser
 
-    <script src="https://unpkg.com/@vbarbarosh/menu@0.0.5/dist/menu.js"></script>
+    <script src="https://unpkg.com/@vbarbarosh/menu@0.0.6/dist/menu.js"></script>
 
 ## Usage in plain JavaScript
 
-    <link href="https://unpkg.com/@vbarbarosh/menu@0.0.5/dist/theme-flat.css" rel="stylesheet">
+    <link href="https://unpkg.com/@vbarbarosh/menu@0.0.6/dist/theme-flat.css" rel="stylesheet">
 
     <ul id="main" class="menu-flat">
         <li>
@@ -33,7 +33,7 @@ A small js for making menus
     </ul>
 
     <script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
-    <script src="https://unpkg.com/@vbarbarosh/menu@0.0.5/dist/menu.js"></script>
+    <script src="https://unpkg.com/@vbarbarosh/menu@0.0.6/dist/menu.js"></script>
     <script>
         menu(document.getElementById('main'))
         document.getElementById('main').addEventListener('click', function (event) {
