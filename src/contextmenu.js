@@ -94,4 +94,48 @@ function contextmenu(menu, client_x, client_y)
     }
 }
 
+function elem_ancestors(elem)
+{
+    const out = [];
+    for (let i = 0, p = elem?.parentElement; p && i < 100; ++i, p = p.parentElement) {
+        out.push(p);
+    }
+    return out;
+}
+
+function elem_move_root(elem, client_x, client_y)
+{
+    const w = elem.offsetWidth;
+    const h = elem.offsetHeight;
+    const ww = window.innerWidth;
+    const hh = window.innerHeight;
+    if (client_x + w < ww) {
+        elem.style.left = Math.round(client_x) + 'px';
+    }
+    else {
+        elem.style.left = Math.round(Math.max(0, client_x - w)) + 'px';
+    }
+    if (client_y + h < hh) {
+        elem.style.top = Math.round(client_y) + 'px';
+    }
+    else {
+        elem.style.top = Math.round(Math.max(0, client_y - h)) + 'px';
+    }
+}
+
+function elem_move_submenu(elem, client_x, client_y)
+{
+    const p = elem.parentElement;
+    const p_r = p.getBoundingClientRect();
+    const elem_w = elem.offsetWidth;
+    const window_w = window.innerWidth;
+    if (client_x + elem_w < window_w) {
+        elem.style.left = Math.round(client_x) + 'px';
+    }
+    else {
+        elem.style.left = Math.round(Math.max(0, p_r.left - elem_w)) + 'px'
+    }
+    elem.style.top = Math.round(Math.min(client_y, window.innerHeight - elem.offsetHeight)) + 'px';
+}
+
 export default contextmenu;
