@@ -1,4 +1,4 @@
-function contextmenu(menu, client_x, client_y)
+function contextmenu(elem, client_x, client_y)
 {
     // 1. Create a backdrop element to intercept mouse events
     // 2. Setup mouse listeners
@@ -20,22 +20,22 @@ function contextmenu(menu, client_x, client_y)
     backdrop.addEventListener('click', backdrop_click);
     backdrop.addEventListener('contextmenu', backdrop_contextmenu);
 
-    Array.from(menu.querySelectorAll('.open')).forEach(v => v.classList.remove('open'));
-    menu.style.display = '';
-    menu.style.zIndex = '10001';
-    menu.addEventListener('click', menu_click);
-    menu.addEventListener('mouseover', menu_mouseover);
-    menu.addEventListener('contextmenu', menu_contextmenu);
-    elem_move_root(menu, client_x, client_y);
+    Array.from(elem.querySelectorAll('.open')).forEach(v => v.classList.remove('open'));
+    elem.style.display = '';
+    elem.style.zIndex = '10001';
+    elem.addEventListener('click', menu_click);
+    elem.addEventListener('mouseover', menu_mouseover);
+    elem.addEventListener('contextmenu', menu_contextmenu);
+    elem_move_root(elem, client_x, client_y);
 
     return {end, promise};
 
     function end(retval) {
         _resolve(retval);
-        menu.style.display = 'none';
-        menu.removeEventListener('click', menu_click);
-        menu.removeEventListener('mouseover', menu_mouseover);
-        menu.removeEventListener('contextmenu', menu_contextmenu);
+        elem.style.display = 'none';
+        elem.removeEventListener('click', menu_click);
+        elem.removeEventListener('mouseover', menu_mouseover);
+        elem.removeEventListener('contextmenu', menu_contextmenu);
         backdrop.removeEventListener('click', backdrop_click);
         backdrop.removeEventListener('contextmenu', backdrop_contextmenu);
         backdrop.remove();
@@ -69,7 +69,7 @@ function contextmenu(menu, client_x, client_y)
         }
         // Hide other submenus
         const ancestors = elem_ancestors(li);
-        Array.from(menu.querySelectorAll('.open')).filter(v => !ancestors.includes(v)).forEach(v => v.classList.remove('open'));
+        Array.from(elem.querySelectorAll('.open')).filter(v => !ancestors.includes(v)).forEach(v => v.classList.remove('open'));
         // Possibly open new submenu
         const submenu = Array.from(li.children).find(v => v.tagName == 'UL');
         if (submenu) {
