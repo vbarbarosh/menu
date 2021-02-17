@@ -16,7 +16,7 @@ function contextmenu(elem, client_x, client_y)
     backdrop.style.left = '0';
     backdrop.style.right = '0';
     backdrop.style.bottom = '0';
-    backdrop.style.zindex = '10000';
+    backdrop.style.zIndex = '10000';
     backdrop.addEventListener('click', backdrop_click);
     backdrop.addEventListener('contextmenu', backdrop_contextmenu);
 
