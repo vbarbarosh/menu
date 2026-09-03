@@ -1,3 +1,10 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="img/cover-dark.png">
+  <img alt="menu" src="img/cover.png">
+</picture>
+
+# `menu`
+
 A small js for making menus
 
 ## Installation

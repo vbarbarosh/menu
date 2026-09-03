@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" font-family="Inter, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.5" fill="#232320"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#0F0F0E" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0F0F0E" stop-opacity="0.92"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="640" fill="#0F0F0E"/>
+  <rect width="1280" height="640" fill="url(#dots)"/>
+  <rect width="1280" height="640" fill="url(#fade)"/>
+  <rect x="0" y="0" width="1280" height="640" fill="none" stroke="#0F0F0E" stroke-width="2"/>
+
+  <!-- ── left: wordmark ───────────────────────────────────────────── -->
+  <g transform="translate(88,0)">
+    <g transform="translate(0,196)">
+      <rect x="0" y="-14" width="9" height="9" fill="#60A5FA"/>
+      <text x="22" y="-5" font-size="14" font-weight="600" letter-spacing="3.2" fill="#60A5FA">MENU BARS · CONTEXT MENUS</text>
+    </g>
+
+    <text x="0" y="300" font-family="'Ubuntu Sans Mono','Noto Sans Mono',ui-monospace,monospace" font-size="104" font-weight="700" letter-spacing="-3" fill="#ECEAE4">menu</text>
+    <rect x="4" y="322" width="72" height="5" rx="2.5" fill="#60A5FA"/>
+
+    <text x="0" y="392" font-size="27" font-weight="500" fill="#ECEAE4" letter-spacing="-0.4">A small js for making menus.</text>
+    <text x="0" y="428" font-size="21" font-weight="400" fill="#9A958B" letter-spacing="-0.2">Plain DOM, no dependencies, submenus that stay open.</text>
+
+    <g font-family="'Ubuntu Sans Mono','Noto Sans Mono',ui-monospace,monospace" font-size="14.5" fill="#9A958B">
+      <g transform="translate(0,472)">
+        <rect x="0" y="0" width="154" height="34" rx="17" fill="#1A1A18" stroke="#2A2A27"/>
+        <text x="20" y="22.5">2 kb minified</text>
+      </g>
+      <g transform="translate(168,472)">
+        <rect x="0" y="0" width="190" height="34" rx="17" fill="#1A1A18" stroke="#2A2A27"/>
+        <text x="20" y="22.5">zero dependencies</text>
+      </g>
+      <g transform="translate(372,472)">
+        <rect x="0" y="0" width="120" height="34" rx="17" fill="#1A1A18" stroke="#2A2A27"/>
+        <text x="20" y="22.5">umd + esm</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ── right: a menu bar, a dropdown and its submenu ───────────── -->
+  <g transform="translate(742,150)">
+    <!-- menu bar -->
+    <g filter="url(#soft)">
+      <rect x="0" y="0" width="300" height="44" rx="12" fill="#1A1A18" stroke="#2A2A27"/>
+      <rect x="6" y="6" width="58" height="32" rx="8" fill="#60A5FA"/>
+    </g>
+    <g font-size="16" font-weight="500">
+      <text x="35" y="28" text-anchor="middle" fill="#0B1220">File</text>
+      <text x="96" y="28" text-anchor="middle" fill="#ECEAE4">Edit</text>
+      <text x="160" y="28" text-anchor="middle" fill="#ECEAE4">View</text>
+      <text x="228" y="28" text-anchor="middle" fill="#ECEAE4">Help</text>
+    </g>
+
+    <!-- dropdown -->
+    <g transform="translate(6,52)">
+      <g filter="url(#soft)">
+        <rect x="0" y="0" width="200" height="222" rx="12" fill="#1A1A18" stroke="#2A2A27"/>
+        <rect x="6" y="114" width="188" height="32" rx="8" fill="#60A5FA"/>
+      </g>
+      <g font-size="16" fill="#ECEAE4">
+        <text x="20" y="34">New</text>
+        <text x="20" y="68">Open…</text>
+        <text x="20" y="102">Save</text>
+        <text x="20" y="136" fill="#0B1220" font-weight="500">Export</text>
+        <text x="20" y="170">Print…</text>
+        <text x="20" y="204" fill="#9A958B">Exit</text>
+      </g>
+      <g font-family="'Ubuntu Sans Mono','Noto Sans Mono',ui-monospace,monospace" font-size="13" fill="#9A958B" text-anchor="end">
+        <text x="180" y="34">⌘N</text>
+        <text x="180" y="68">⌘O</text>
+        <text x="180" y="102">⌘S</text>
+        <text x="180" y="136" fill="#0B1220">›</text>
+        <text x="180" y="170">⌘P</text>
+      </g>
+      <line x1="10" y1="184" x2="190" y2="184" stroke="#2A2A27"/>
+    </g>
+
+    <!-- the hover path: from the pointer to the near edge of the submenu -->
+    <polygon points="146,174 226,144 226,302" fill="#60A5FA" fill-opacity="0.14" stroke="#60A5FA" stroke-opacity="0.6" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+    <!-- submenu -->
+    <g transform="translate(226,144)">
+      <g filter="url(#soft)">
+        <rect x="0" y="0" width="172" height="158" rx="12" fill="#1A1A18" stroke="#2A2A27"/>
+      </g>
+      <g font-size="16" fill="#ECEAE4">
+        <text x="20" y="34">PNG</text>
+        <text x="20" y="68">SVG</text>
+        <text x="20" y="102">PDF</text>
+        <text x="20" y="136">Copy as…</text>
+      </g>
+    </g>
+
+    <!-- pointer -->
+    <path transform="translate(140,166)" d="M3 2 L3 26 L9 20 L13 30 L18 28 L14 18 L22 18 Z" fill="#ECEAE4" stroke="#0F0F0E" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- prompt line -->
+  <text x="742" y="530" font-family="'Ubuntu Sans Mono','Noto Sans Mono',ui-monospace,monospace" font-size="16" fill="#9A958B"><tspan fill="#60A5FA">$</tspan> npm i @vbarbarosh/menu<tspan fill="#ECEAE4" font-weight="600">▍</tspan></text>
+</svg>
