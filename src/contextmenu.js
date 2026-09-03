@@ -1,10 +1,4 @@
-// How long a row under the pointer waits before it takes the open submenu
-// over, while the pointer is on its way to that submenu.
-const GRACE_MS = 300;
-
-// How many recent pointer positions are kept; the oldest is the apex of the
-// triangle the pointer is expected to stay in on its way to the submenu.
-const POINTER_HISTORY = 3;
+import pointer_path from './pointer_path.js';
 
 function contextmenu(elem, client_x, client_y, options = {})
 {
@@ -12,10 +6,7 @@ function contextmenu(elem, client_x, client_y, options = {})
     // 2. Setup mouse listeners
     // 3. Terminate when mouse button was pressed
 
-    const grace_ms = (options.grace_ms === undefined) ? GRACE_MS : options.grace_ms;
-    const pointer_history = [];
-    let pending_li = null;
-    let pending_timer = null;
+    const path = pointer_path(options);
 
     let _resolve, _reject;
     const _promise = new Promise(function (resolve, reject) {
@@ -46,7 +37,7 @@ function contextmenu(elem, client_x, client_y, options = {})
 
     function end(retval) {
         _resolve(retval);
-        pending_clear();
+        path.pending_clear();
         elem.style.display = 'none';
         elem.removeEventListener('click', menu_click);
         elem.removeEventListener('mousemove', menu_mousemove);
@@ -79,10 +70,7 @@ function contextmenu(elem, client_x, client_y, options = {})
     }
 
     function menu_mousemove(event) {
-        pointer_history.push({x: event.clientX, y: event.clientY});
-        if (pointer_history.length > POINTER_HISTORY) {
-            pointer_history.shift();
-        }
+        path.mousemove(event);
     }
 
     function menu_mouseover(event) {
@@ -90,16 +78,13 @@ function contextmenu(elem, client_x, client_y, options = {})
         if (!li) {
             return;
         }
-        // A pointer on its way to an open submenu crosses the rows between
-        // it and the submenu; those rows wait rather than take the submenu
-        // over. The way is the triangle from where the pointer was a few
-        // moves ago to the near edge of the submenu.
+        // A row on the pointer's way to an open submenu waits, see pointer_path
         const open_sibling = Array.from(li.parentElement.children).find(v => v !== li && v.classList.contains('open'));
-        if (open_sibling && is_pointer_heading_to(open_sibling)) {
-            pending_set(li);
+        if (open_sibling && path.is_heading_to(open_sibling)) {
+            path.pending_set(li, open_row);
             return;
         }
-        pending_clear();
+        path.pending_clear();
         open_row(li);
     }
 
@@ -116,46 +101,6 @@ function contextmenu(elem, client_x, client_y, options = {})
         }
     }
 
-    function is_pointer_heading_to(open_li) {
-        const submenu = Array.from(open_li.children).find(v => v.tagName == 'UL');
-        if (!submenu || pointer_history.length < 2) {
-            return false;
-        }
-        const apex = pointer_history[0];
-        const pointer = pointer_history[pointer_history.length - 1];
-        const r = submenu.getBoundingClientRect();
-        // The near edge is the one facing the row the submenu opened from
-        const opened_to_the_right = r.left >= open_li.getBoundingClientRect().right - 1;
-        const edge_x = opened_to_the_right ? r.left : r.right;
-        return is_point_in_triangle(pointer, apex, {x: edge_x, y: r.top}, {x: edge_x, y: r.bottom});
-    }
-
-    // The row waits for the pointer to arrive at the submenu; a pointer that
-    // stays on the row past the grace takes the row's own submenu.
-    function pending_set(li) {
-        if (pending_li === li) {
-            return;
-        }
-        pending_clear();
-        pending_li = li;
-        pending_timer = setTimeout(pending_expire, grace_ms);
-    }
-
-    function pending_clear() {
-        clearTimeout(pending_timer);
-        pending_li = null;
-        pending_timer = null;
-    }
-
-    function pending_expire() {
-        const li = pending_li;
-        pending_clear();
-        const pointer = pointer_history[pointer_history.length - 1];
-        if (li && pointer && is_point_in_rect(pointer, li.getBoundingClientRect())) {
-            open_row(li);
-        }
-    }
-
     function menu_contextmenu(event) {
         event.preventDefault();
         menu_mouseover(event);
@@ -169,28 +114,6 @@ function contextmenu(elem, client_x, client_y, options = {})
         event.preventDefault();
         end(null);
     }
-}
-
-function is_point_in_rect(p, r)
-{
-    return p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom;
-}
-
-// https://en.wikipedia.org/wiki/Barycentric_coordinate_system — the point
-// is inside when it lies on the same side of all three edges
-function is_point_in_triangle(p, a, b, c)
-{
-    const d1 = sign(p, a, b);
-    const d2 = sign(p, b, c);
-    const d3 = sign(p, c, a);
-    const has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-    const has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-    return !(has_neg && has_pos);
-}
-
-function sign(p1, p2, p3)
-{
-    return (p1.x - p3.x)*(p2.y - p3.y) - (p2.x - p3.x)*(p1.y - p3.y);
 }
 
 function elem_ancestors(elem)

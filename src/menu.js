@@ -1,5 +1,8 @@
-function menu(elem)
+import pointer_path from './pointer_path.js';
+
+function menu(elem, options = {})
 {
+    const path = pointer_path(options);
     const ctx = {};
     ctx.elem = elem;
     ctx.inst = null;
@@ -22,11 +25,25 @@ function menu(elem)
                 }
             }
         },
+        mousemove: function (event) {
+            path.mousemove(event);
+        },
         mouseover: function (event) {
             ctx.event = event;
-            if (ctx.elem.contains(event.target)) {
-                menu_int(event, ctx.stack);
+            if (!ctx.elem.contains(event.target)) {
+                return;
             }
+            // A row on the pointer's way to an open submenu waits, see pointer_path
+            const li = event.target.closest('li');
+            const open_sibling = li && Array.from(li.parentElement.children).find(v => v !== li && v.classList.contains('open'));
+            if (open_sibling && path.is_heading_to(open_sibling)) {
+                path.pending_set(li, function (li) {
+                    menu_int({type: 'mouseover', target: li}, ctx.stack);
+                });
+                return;
+            }
+            path.pending_clear();
+            menu_int(event, ctx.stack);
         },
         mousedown: function (event) {
             ctx.event = event;
@@ -41,12 +58,14 @@ function menu(elem)
     ctx.inst = {end, hide};
     return ctx.inst;
     function end() {
+        path.pending_clear();
         for (const type of Object.keys(listeners)) {
             document.removeEventListener(type, listeners[type]);
         }
     }
     function hide() {
         ctx.is_open = false;
+        path.pending_clear();
         menu_int(null, ctx.stack);
     }
 }
