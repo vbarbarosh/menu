@@ -32,7 +32,6 @@ A small js for making menus
         <li data-action="help">Help</li>
     </ul>
 
-    <script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
     <script src="https://unpkg.com/@vbarbarosh/menu@0.0.8/dist/menu.js"></script>
     <script>
         menu(document.getElementById('main'))

@@ -44,8 +44,5 @@
     "sass-loader": "^17.0.1",
     "webpack": "^5.110.3",
     "webpack-cli": "^7.2.3"
-  },
-  "peerDependencies": {
-    "jquery": "^3.5.1"
   }
 }

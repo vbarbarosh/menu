@@ -1,5 +1,3 @@
-import jQuery from 'jquery';
-
 function menu(elem)
 {
     const ctx = {};
@@ -9,7 +7,7 @@ function menu(elem)
     ctx.is_open = false;
     ctx.stack = [];
     ctx.click = typeof ctx.click == 'function' ? ctx.click : function () {
-        if (jQuery(ctx.event.target).addBack().closest('[data-menu-keepalive]').length == 0) {
+        if (!ctx.event.target.closest('[data-menu-keepalive]')) {
             hide();
         }
     };
@@ -17,7 +15,7 @@ function menu(elem)
     const listeners = {
         click: function (event) {
             ctx.event = event;
-            if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+            if (ctx.elem.contains(event.target)) {
                 ctx.item = menu_int(event, ctx.stack);
                 if (ctx.item) {
                     ctx.click(ctx);
@@ -26,22 +24,26 @@ function menu(elem)
         },
         mouseover: function (event) {
             ctx.event = event;
-            if (jQuery(event.target).addBack().closest(ctx.elem).length > 0) {
+            if (ctx.elem.contains(event.target)) {
                 menu_int(event, ctx.stack);
             }
         },
         mousedown: function (event) {
             ctx.event = event;
-            if (jQuery(event.target).addBack().closest(ctx.elem).length == 0) {
+            if (!ctx.elem.contains(event.target)) {
                 menu_int(null, ctx.stack);
             }
         },
     };
-    jQuery(document).on(listeners);
+    for (const type of Object.keys(listeners)) {
+        document.addEventListener(type, listeners[type]);
+    }
     ctx.inst = {end, hide};
     return ctx.inst;
     function end() {
-        jQuery(document).off(listeners);
+        for (const type of Object.keys(listeners)) {
+            document.removeEventListener(type, listeners[type]);
+        }
     }
     function hide() {
         ctx.is_open = false;
@@ -55,8 +57,8 @@ function menu_int(event, stack, move)
     if (event === null) {
         while (stack.length > 1) {
             const top = stack.pop();
-            jQuery(top.label).removeClass('open hover');
-            jQuery(top.submenu).hide();
+            top.label.classList.remove('open', 'hover');
+            submenu_hide(top.submenu);
         }
         stack.pop();
         return null;
@@ -76,7 +78,7 @@ function menu_int(event, stack, move)
     // -----------
     // 1. click on item: return item
     // 2. click on submenu: toggle submenu
-    const label = jQuery(event.target).addBack().closest('li').get(0);
+    const label = event.target.closest('li');
     if (label) {
         // XXX hack
         if (stack.length == 0) {
@@ -84,31 +86,31 @@ function menu_int(event, stack, move)
         }
         while (stack.length > 1) {
             const top = stack.pop();
-            jQuery(top.label).removeClass('hover');
+            top.label.classList.remove('hover');
             if (!top.submenu) {
                 is_special = true;
             }
             if (!special_label) {
                 special_label = top.label;
             }
-            if (jQuery(top.submenu).find(label).length) {
+            if (top.submenu && top.submenu.contains(label)) {
                 stack.push(top);
                 break;
             }
-            jQuery(top.label).removeClass('open');
-            jQuery(top.submenu).hide();
+            top.label.classList.remove('open');
+            submenu_hide(top.submenu);
         }
         if (event.type == 'click' && stack_length_orig > stack.length + is_special) {
             // Clicking on opened top menu means "close menu and exit"
             if (stack.length == 1) {
                 stack.pop();
             }
-            else {
-                jQuery(special_label).addClass('hover');
+            else if (special_label) {
+                special_label.classList.add('hover');
             }
             return null;
         }
-        const submenu = jQuery(label).children('ul').get(0);
+        const submenu = Array.from(label.children).find(v => v.tagName === 'UL');
         if (submenu) {
             if (move) {
                 move(label, submenu);
@@ -116,21 +118,35 @@ function menu_int(event, stack, move)
             else {
                 const {top, left, right, bottom} = label.getBoundingClientRect();
                 if (stack.length <= 1) {
-                    jQuery(submenu).show().css({top: bottom, left});
+                    submenu_show(submenu, left, bottom);
                 }
                 else {
-                    jQuery(submenu).show().css({top: top, left: right});
+                    submenu_show(submenu, right, top);
                 }
             }
-            jQuery(label).addClass('open hover');
+            label.classList.add('open', 'hover');
             stack.push({label, submenu});
             return null;
         }
         else {
             stack.push({label, submenu: null});
-            jQuery(label).addClass('hover');
+            label.classList.add('hover');
         }
         return label;
+    }
+}
+
+function submenu_show(submenu, left, top)
+{
+    submenu.style.display = 'block';
+    submenu.style.left = `${left}px`;
+    submenu.style.top = `${top}px`;
+}
+
+function submenu_hide(submenu)
+{
+    if (submenu) {
+        submenu.style.display = 'none';
     }
 }
 

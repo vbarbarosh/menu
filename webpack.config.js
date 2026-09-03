@@ -17,9 +17,6 @@ function render_config(mode)
                 export: 'default',
             },
         },
-        externals: {
-            jquery: 'jQuery',
-        },
         module: {
             rules: [
                 {
