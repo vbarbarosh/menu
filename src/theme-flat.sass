@@ -18,6 +18,10 @@
     position: fixed
     border: 1px solid
 
+// A row whose submenu is open; the context menu shows submenus by this class
+.menu-flat li.open > ul
+    display: block
+
 .menu-flat li
     list-style: none
     line-height: 1.75em
@@ -36,3 +40,11 @@
 
 .menu-flat .hover
     background: #88f
+
+// A context menu: its root looks like a submenu and floats at a point
+.menu-flat-context
+    display: block
+    position: fixed
+    width: auto
+    margin: 0
+    border: 1px solid

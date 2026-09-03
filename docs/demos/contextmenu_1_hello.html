@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Demos • Context menu • Hello</title>
+
+<link href="https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/theme-flat.css" rel="stylesheet">
+<style>
+    body { margin: 0; font: 15px/1.5 Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: #1b1a18; background: #faf9f6; }
+    #canvas { height: 100vh; display: flex; align-items: center; justify-content: center; user-select: none; }
+    #canvas p { text-align: center; color: #736e64; }
+    #canvas b { display: block; color: #1b1a18; font-size: 18px; margin-bottom: 4px; }
+</style>
+
+<div id="canvas">
+    <p><b>Right-click anywhere</b><span id="result">nothing chosen yet</span></p>
+</div>
+
+<!-- Hidden by an inline style, which is what the library toggles -->
+<ul id="ctx" class="menu-flat menu-flat-context" style="display: none">
+    <li data-action="cut">Cut</li>
+    <li data-action="copy">Copy</li>
+    <li data-action="paste">Paste</li>
+    <li></li>
+    <li>
+        Arrange <span>►</span>
+        <ul>
+            <li data-action="forward">Bring Forward</li>
+            <li data-action="front">Bring to Front</li>
+            <li data-action="backward">Send Backward</li>
+            <li data-action="back">Send to Back</li>
+        </ul>
+    </li>
+    <li>
+        Align <span>►</span>
+        <ul>
+            <li data-action="left">Left</li>
+            <li data-action="center">Center</li>
+            <li data-action="right">Right</li>
+            <li></li>
+            <li data-action="top">Top</li>
+            <li data-action="middle">Middle</li>
+            <li data-action="bottom">Bottom</li>
+        </ul>
+    </li>
+    <li></li>
+    <li data-action="delete">Delete</li>
+</ul>
+
+<script src="https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/contextmenu.js"></script>
+<script>
+    document.getElementById('canvas').addEventListener('contextmenu', async function (event) {
+        event.preventDefault();
+        const li = await contextmenu(document.getElementById('ctx'), event.clientX, event.clientY).promise();
+        document.getElementById('result').textContent = li ? 'chosen: ' + li.dataset.action : 'dismissed';
+    });
+</script>

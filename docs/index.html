@@ -2,44 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://unpkg.com/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://unpkg.com/@vbarbarosh/smcss@0.3.20/dist/sm.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A small js for making menus &mdash; @vbarbarosh/menu</title>
     <style>
-        .app-border { border: 1px solid #e7e7e7; }
+        body { margin: 0; font: 16px/1.5 Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: #1b1a18; background: #faf9f6; }
+        header { display: flex; align-items: baseline; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #e4dfd5; background: #fff; }
+        header b { font-size: 18px; }
+        header sub { color: #736e64; }
+        header a { margin-left: auto; color: #1d4ed8; text-decoration: none; }
+        main { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
+        main img { max-width: 100%; border-radius: 12px; border: 1px solid #e4dfd5; }
+        h2 { font-size: 18px; margin: 32px 0 8px; }
+        ul { padding-left: 20px; }
+        a { color: #1d4ed8; }
+        code { font-family: ui-monospace, "Ubuntu Sans Mono", Menlo, monospace; font-size: 14px; background: #fff; border: 1px solid #e4dfd5; border-radius: 6px; padding: 1px 6px; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light app-border xborder-ht">
-    <a class="navbar-brand" href="#"><small>@vbarbarosh/menu<sub><sub>v0.1.0</sub></sub></small></a>
-    <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="https://github.com/vbarbarosh/menu" target="_blank">
-                    GitHub
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<header>
+    <b>@vbarbarosh/menu</b>
+    <sub><sub>v0.1.0</sub></sub>
+    <a href="https://github.com/vbarbarosh/menu" target="_blank">GitHub</a>
+</header>
 
-<br>
+<main>
+    <img alt="menu" src="../img/cover.png">
 
-<div id="app" class="container">
+    <p>A small js for making menus: a menu bar and a context menu over plain
+    <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code> markup. No dependencies, under 4 KB minified.
+    A submenu stays open while the pointer heads for it, even across other rows.</p>
 
-    <p>A small js for making menus</p>
-
+    <h2>Demos</h2>
     <ul>
-        <li><a href="demos/menu_1_hello.html">Demos • 1 • Hello</a></li>
+        <li><a href="demos/menu_1_hello.html">Menu bar</a> &mdash; File, Edit, View with nested submenus, a keep-alive Zoom menu</li>
+        <li><a href="demos/contextmenu_1_hello.html">Context menu</a> &mdash; right-click a canvas, choose a row, read the result</li>
     </ul>
 
-</div>
+    <h2>Install</h2>
+    <p><code>npm i @vbarbarosh/menu</code> &mdash; or from a script tag:</p>
+    <ul>
+        <li><code>https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/menu.js</code></li>
+        <li><code>https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/contextmenu.js</code></li>
+        <li><code>https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/theme-flat.css</code></li>
+    </ul>
 
-<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
-<script src="https://unpkg.com/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://unpkg.com/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <p>The README on GitHub has the markup rules, both APIs and the options.</p>
+</main>
 
 </body>
 </html>

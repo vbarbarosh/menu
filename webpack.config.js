@@ -1,18 +1,19 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 
-function render_config(mode)
+// One UMD bundle per entry; the file defines one global named after it
+function render_config(mode, name)
 {
     const is_development = (mode === 'development');
 
     return {
         mode,
-        entry: './src/menu.js',
+        entry: `./src/${name}.js`,
         devtool: false,
         output: {
-            filename: is_development ? 'menu.js' : 'menu.min.js',
+            filename: is_development ? `${name}.js` : `${name}.min.js`,
             library: {
-                name: 'menu',
+                name,
                 type: 'umd',
                 export: 'default',
             },
@@ -67,8 +68,10 @@ function render_sass(mode, entry)
 }
 
 export default [
-    render_config('development'),
-    render_config('production'),
+    render_config('development', 'menu'),
+    render_config('production', 'menu'),
+    render_config('development', 'contextmenu'),
+    render_config('production', 'contextmenu'),
     render_sass('development', './src/theme-flat.sass'),
     render_sass('production', './src/theme-flat.sass'),
 ];
