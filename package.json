@@ -1,7 +1,7 @@
 {
   "author": "Vladimir Barbarosh",
   "name": "@vbarbarosh/menu",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "A small js for making menus",
   "type": "module",
   "license": "ISC",
