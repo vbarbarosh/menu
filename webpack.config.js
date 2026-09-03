@@ -1,10 +1,9 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
 
 function render_config(mode)
 {
-    // noinspection EqualityComparisonWithCoercionJS
-    const is_development = (mode == 'development');
+    const is_development = (mode === 'development');
 
     return {
         mode,
@@ -12,8 +11,11 @@ function render_config(mode)
         devtool: false,
         output: {
             filename: is_development ? 'menu.js' : 'menu.min.js',
-            library: 'menu',
-            libraryExport: 'default',
+            library: {
+                name: 'menu',
+                type: 'umd',
+                export: 'default',
+            },
         },
         externals: {
             jquery: 'jQuery',
@@ -37,8 +39,7 @@ function render_config(mode)
 
 function render_sass(mode, entry)
 {
-    // noinspection EqualityComparisonWithCoercionJS
-    const is_development = (mode == 'development');
+    const is_development = (mode === 'development');
     const filename = is_development ? path.basename(entry, '.sass') + '.css' : path.basename(entry, '.sass') + '.min.css';
 
     return {
@@ -68,8 +69,7 @@ function render_sass(mode, entry)
     };
 }
 
-// noinspection WebpackConfigHighlighting
-module.exports = [
+export default [
     render_config('development'),
     render_config('production'),
     render_sass('development', './src/theme-flat.sass'),
