@@ -24,6 +24,10 @@
   border: 1px solid;
 }
 
+.menu-flat li.open > ul {
+  display: block;
+}
+
 .menu-flat li {
   list-style: none;
   line-height: 1.75em;
@@ -46,4 +50,12 @@
 
 .menu-flat .hover {
   background: #88f;
+}
+
+.menu-flat-context {
+  display: block;
+  position: fixed;
+  width: auto;
+  margin: 0;
+  border: 1px solid;
 }

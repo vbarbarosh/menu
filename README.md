@@ -29,8 +29,8 @@ import contextmenu from '@vbarbarosh/menu/src/contextmenu.js';
 Or from a `<script>` tag — each file defines one global, `menu` or
 `contextmenu`:
 
-    <script src="https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/menu.js"></script>
-    <script src="https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/contextmenu.js"></script>
+    <script src="https://unpkg.com/@vbarbarosh/menu@0.2.0/dist/menu.js"></script>
+    <script src="https://unpkg.com/@vbarbarosh/menu@0.2.0/dist/contextmenu.js"></script>
 
 ## Markup
 
@@ -39,7 +39,7 @@ as a submenu; an empty `<li>` is a separator. The library adds `open` to a row
 whose submenu is shown and `hover` to the row under the pointer, and sets
 `top`/`left` on a submenu it shows.
 
-    <link href="https://unpkg.com/@vbarbarosh/menu@0.1.0/dist/theme-flat.css" rel="stylesheet">
+    <link href="https://unpkg.com/@vbarbarosh/menu@0.2.0/dist/theme-flat.css" rel="stylesheet">
 
     <ul id="main" class="menu-flat">
         <li>

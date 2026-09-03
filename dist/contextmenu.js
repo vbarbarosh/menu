@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["menu"] = factory();
+		exports["contextmenu"] = factory();
 	else
-		root["menu"] = factory();
+		root["contextmenu"] = factory();
 })(self, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
@@ -182,194 +182,168 @@ function sign(p1, p2, p3) {
 let __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
-/*!*********************!*\
-  !*** ./src/menu.js ***!
-  \*********************/
+/*!****************************!*\
+  !*** ./src/contextmenu.js ***!
+  \****************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _pointer_path_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pointer_path.js */ "./src/pointer_path.js");
 
-function menu(elem) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function contextmenu(elem, client_x, client_y) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  // 1. Create a backdrop element to intercept mouse events
+  // 2. Setup mouse listeners
+  // 3. Terminate when mouse button was pressed
+
   var path = (0,_pointer_path_js__WEBPACK_IMPORTED_MODULE_0__["default"])(options);
-  var ctx = {};
-  ctx.elem = elem;
-  ctx.inst = null;
-  ctx.event = null;
-  ctx.is_open = false;
-  ctx.stack = [];
-  ctx.click = typeof ctx.click == 'function' ? ctx.click : function () {
-    if (!ctx.event.target.closest('[data-menu-keepalive]')) {
-      hide();
-    }
-  };
-  var listeners = {
-    click: function click(event) {
-      ctx.event = event;
-      if (ctx.elem.contains(event.target)) {
-        ctx.item = menu_int(event, ctx.stack);
-        if (ctx.item) {
-          ctx.click(ctx);
-        }
-      }
-    },
-    mousemove: function mousemove(event) {
-      path.mousemove(event);
-    },
-    mouseover: function mouseover(event) {
-      ctx.event = event;
-      if (!ctx.elem.contains(event.target)) {
-        return;
-      }
-      // A row on the pointer's way to an open submenu waits, see pointer_path
-      var li = event.target.closest('li');
-      var open_sibling = li && Array.from(li.parentElement.children).find(function (v) {
-        return v !== li && v.classList.contains('open');
-      });
-      if (open_sibling && path.is_heading_to(open_sibling)) {
-        path.pending_set(li, function (li) {
-          menu_int({
-            type: 'mouseover',
-            target: li
-          }, ctx.stack);
-        });
-        return;
-      }
-      path.pending_clear();
-      menu_int(event, ctx.stack);
-    },
-    mousedown: function mousedown(event) {
-      ctx.event = event;
-      if (!ctx.elem.contains(event.target)) {
-        menu_int(null, ctx.stack);
-      }
-    }
-  };
-  for (var _i = 0, _Object$keys = Object.keys(listeners); _i < _Object$keys.length; _i++) {
-    var type = _Object$keys[_i];
-    document.addEventListener(type, listeners[type]);
-  }
-  ctx.inst = {
+  var _resolve, _reject;
+  var _promise = new Promise(function (resolve, reject) {
+    _resolve = resolve;
+    _reject = reject;
+  });
+  var backdrop = document.body.appendChild(document.createElement('DIV'));
+  backdrop.style.position = 'fixed';
+  backdrop.style.top = '0';
+  backdrop.style.left = '0';
+  backdrop.style.right = '0';
+  backdrop.style.bottom = '0';
+  backdrop.style.zIndex = '10000';
+  backdrop.addEventListener('click', backdrop_click);
+  backdrop.addEventListener('contextmenu', backdrop_contextmenu);
+  Array.from(elem.querySelectorAll('.open')).forEach(function (v) {
+    return v.classList.remove('open');
+  });
+  elem.style.display = '';
+  elem.style.zIndex = '10001';
+  elem.addEventListener('click', menu_click);
+  elem.addEventListener('mousemove', menu_mousemove);
+  elem.addEventListener('mouseover', menu_mouseover);
+  elem.addEventListener('contextmenu', menu_contextmenu);
+  elem_move_root(elem, client_x, client_y);
+  return {
     end: end,
-    hide: hide
+    promise: promise
   };
-  return ctx.inst;
-  function end() {
+  function end(retval) {
+    _resolve(retval);
     path.pending_clear();
-    for (var _i2 = 0, _Object$keys2 = Object.keys(listeners); _i2 < _Object$keys2.length; _i2++) {
-      var _type = _Object$keys2[_i2];
-      document.removeEventListener(_type, listeners[_type]);
-    }
+    elem.style.display = 'none';
+    elem.removeEventListener('click', menu_click);
+    elem.removeEventListener('mousemove', menu_mousemove);
+    elem.removeEventListener('mouseover', menu_mouseover);
+    elem.removeEventListener('contextmenu', menu_contextmenu);
+    backdrop.removeEventListener('click', backdrop_click);
+    backdrop.removeEventListener('contextmenu', backdrop_contextmenu);
+    backdrop.remove();
   }
-  function hide() {
-    ctx.is_open = false;
-    path.pending_clear();
-    menu_int(null, ctx.stack);
+  function promise() {
+    return _promise;
   }
-}
-function menu_int(event, stack, move) {
-  // Special case meaning "close it, we are finished"
-  if (event === null) {
-    while (stack.length > 1) {
-      var top = stack.pop();
-      top.label.classList.remove('open', 'hover');
-      submenu_hide(top.submenu);
+  function menu_click(event) {
+    var li = event.target.closest('li');
+    if (!li) {
+      return;
     }
-    stack.pop();
-    return null;
-  }
-
-  // Ignore until menu was clicked
-  if (stack.length == 0 && event.type != 'click') {
-    return null;
-  }
-  var stack_length_orig = stack.length;
-  var is_special = false;
-  var special_label = null;
-
-  // 1. determine element with label
-  // 2. determine submenu
-  // -----------
-  // 1. click on item: return item
-  // 2. click on submenu: toggle submenu
-  var label = event.target.closest('li');
-  if (label) {
-    // XXX hack
-    if (stack.length == 0) {
-      stack.push(null);
-    }
-    while (stack.length > 1) {
-      var _top = stack.pop();
-      _top.label.classList.remove('hover');
-      if (!_top.submenu) {
-        is_special = true;
-      }
-      if (!special_label) {
-        special_label = _top.label;
-      }
-      if (_top.submenu && _top.submenu.contains(label)) {
-        stack.push(_top);
-        break;
-      }
-      _top.label.classList.remove('open');
-      submenu_hide(_top.submenu);
-    }
-    if (event.type == 'click' && stack_length_orig > stack.length + is_special) {
-      // Clicking on opened top menu means "close menu and exit"
-      if (stack.length == 1) {
-        stack.pop();
-      } else if (special_label) {
-        special_label.classList.add('hover');
-      }
-      return null;
-    }
-    var submenu = Array.from(label.children).find(function (v) {
-      return v.tagName === 'UL';
+    // Toggle submenu
+    var submenu = Array.from(li.children).find(function (v) {
+      return v.tagName == 'UL';
     });
     if (submenu) {
-      if (move) {
-        move(label, submenu);
-      } else {
-        var _label$getBoundingCli = label.getBoundingClientRect(),
-          _top2 = _label$getBoundingCli.top,
-          left = _label$getBoundingCli.left,
-          right = _label$getBoundingCli.right,
-          bottom = _label$getBoundingCli.bottom;
-        if (stack.length <= 1) {
-          submenu_show(submenu, left, bottom);
-        } else {
-          submenu_show(submenu, right, _top2);
-        }
-      }
-      label.classList.add('open', 'hover');
-      stack.push({
-        label: label,
-        submenu: submenu
-      });
-      return null;
-    } else {
-      stack.push({
-        label: label,
-        submenu: null
-      });
-      label.classList.add('hover');
+      li.classList.toggle('open');
+      return;
     }
-    return label;
+    if (li.closest('[data-menu-keepalive]')) {
+      return;
+    }
+    end(li);
+  }
+  function menu_mousemove(event) {
+    path.mousemove(event);
+  }
+  function menu_mouseover(event) {
+    var li = event.target.closest('li');
+    if (!li) {
+      return;
+    }
+    // A row on the pointer's way to an open submenu waits, see pointer_path
+    var open_sibling = Array.from(li.parentElement.children).find(function (v) {
+      return v !== li && v.classList.contains('open');
+    });
+    if (open_sibling && path.is_heading_to(open_sibling)) {
+      path.pending_set(li, open_row);
+      return;
+    }
+    path.pending_clear();
+    open_row(li);
+  }
+  function open_row(li) {
+    // Hide other submenus
+    var ancestors = elem_ancestors(li);
+    Array.from(elem.querySelectorAll('.open')).filter(function (v) {
+      return !ancestors.includes(v);
+    }).forEach(function (v) {
+      return v.classList.remove('open');
+    });
+    // Possibly open new submenu
+    var submenu = Array.from(li.children).find(function (v) {
+      return v.tagName == 'UL';
+    });
+    if (submenu) {
+      li.classList.add('open');
+      var r = li.getBoundingClientRect();
+      elem_move_submenu(submenu, r.right, r.top);
+    }
+  }
+  function menu_contextmenu(event) {
+    event.preventDefault();
+    menu_mouseover(event);
+  }
+  function backdrop_click() {
+    end(null);
+  }
+  function backdrop_contextmenu(event) {
+    event.preventDefault();
+    end(null);
   }
 }
-function submenu_show(submenu, left, top) {
-  submenu.style.display = 'block';
-  submenu.style.left = "".concat(left, "px");
-  submenu.style.top = "".concat(top, "px");
+function elem_ancestors(elem) {
+  var out = [];
+  for (var i = 0, p = elem && elem.parentElement; p && i < 100; ++i, p = p.parentElement) {
+    out.push(p);
+  }
+  return out;
 }
-function submenu_hide(submenu) {
-  if (submenu) {
-    submenu.style.display = 'none';
+function elem_move_root(elem, client_x, client_y) {
+  var w = elem.offsetWidth;
+  var h = elem.offsetHeight;
+  var ww = window.innerWidth;
+  var hh = window.innerHeight;
+  if (client_x + w < ww) {
+    elem.style.left = Math.round(client_x) + 'px';
+  } else {
+    elem.style.left = Math.round(Math.max(0, client_x - w)) + 'px';
+  }
+  if (client_y + h < hh) {
+    elem.style.top = Math.round(client_y) + 'px';
+  } else {
+    elem.style.top = Math.round(Math.max(0, client_y - h)) + 'px';
   }
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (menu);
+function elem_move_submenu(elem, client_x, client_y) {
+  var p = elem.parentElement;
+  var p_r = p.getBoundingClientRect();
+  var elem_w = elem.offsetWidth;
+  var window_w = window.innerWidth;
+  if (client_x + elem_w < window_w) {
+    elem.style.left = Math.round(client_x) + 'px';
+  } else {
+    elem.style.left = Math.round(Math.max(0, p_r.left - elem_w)) + 'px';
+  }
+  elem.style.top = Math.round(Math.min(client_y, window.innerHeight - elem.offsetHeight)) + 'px';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (contextmenu);
 })();
 
 __webpack_exports__ = __webpack_exports__["default"];
